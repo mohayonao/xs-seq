@@ -6,8 +6,32 @@
   "bugs": {
     "url": "https://github.com/mohayonao/xs-seq/issues"
   },
+  "dependencies": {
+    "nmap": "^0.9.0",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "web-audio-scheduler": "^1.3.0",
+    "worker-timer": "^1.1.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "eslint": "^3.4.0",
+    "eslint-plugin-react": "^6.2.0",
+    "watchify": "^3.7.0"
+  },
   "homepage": "http://mohayonao.github.io/xs-seq/",
   "license": "MIT",
   "main": "main-bundle.js",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "browserify src/main.js -o main-bundle.js -t [ babelify ]",
+    "lint": "eslint src",
+    "watch": "watchify src/main.js -o main-bundle.js --verbose -t [ babelify ]"
+  }
 }
