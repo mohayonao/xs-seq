@@ -1,7 +1,11 @@
 "use strict";
 
 const events = require("events");
+
+// ウェブオーディオベースのタイムライン処理用のライブラリ
 const WebAudioScheduler = require("web-audio-scheduler");
+
+// タブ移動時にタイマーの精度が落ちないタイマーAPI
 const timerAPI = require("worker-timer");
 
 const NOTE_NUMBERS = [ 72, 76, 79, 83 ];
@@ -49,6 +53,8 @@ class Sequencer extends events.EventEmitter {
     this.emit("tick", this.index);
 
     this.index = (this.index + 1) % this.matrix[0].length;
+
+    // 次のスケジュールを登録してループする
     this.sched.insert(t1, this.sequence);
   }
 }
@@ -75,6 +81,9 @@ function playNote(destination, playbackTime, { frequency, duration }) {
   oscillator1.start(t0);
   oscillator1.stop(t2);
   oscillator1.connect(gain);
+
+  // ブラウザのバージョンによってオーディオノードの
+  // ライフタイムがあやしいことがあるので手動で切断しています
   oscillator1.onended = () => {
     oscillator1.disconnect();
     oscillator2.disconnect();
