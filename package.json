@@ -1,6 +1,6 @@
 {
   "name": "@mohayonao/xs-seq",
-  "description": "xs sequencer",
+  "description": "minimum sequencer with React/Redux",
   "version": "0.0.0",
   "author": "Nao Yonamine <mohayonao@gmail.com>",
   "bugs": {

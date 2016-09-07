@@ -1,6 +1,6 @@
 # xs-seq
 
-最小構成のシーケンサー
+minimum sequencer with React/Redux
 
 - https://mohayonao.github.io/xs-seq/
 
