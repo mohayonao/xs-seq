@@ -20,7 +20,7 @@ class App extends React.Component {
         <div>
         BPM: <input type="range" value={ bpm } min="80" max="200" onChange={ changeBPM } />
         </div>
-        <div>{ matrixElem}</div>
+        <div>{ matrixElem }</div>
       </div>
     );
   }

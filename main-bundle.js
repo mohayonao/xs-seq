@@ -22959,14 +22959,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var events = require("events");
-
-// ウェブオーディオベースのタイムライン処理用のライブラリ
 var WebAudioScheduler = require("web-audio-scheduler");
-
-// タブ移動時にタイマーの精度が落ちないタイマーAPI
 var timerAPI = require("worker-timer");
 
-var NOTE_NUMBERS = [72, 76, 79, 83];
+var NOTE_NUMBERS = [72, 76, 79, 83].reverse();
 
 var Sequencer = function (_events$EventEmitter) {
   _inherits(Sequencer, _events$EventEmitter);
@@ -22995,12 +22991,12 @@ var Sequencer = function (_events$EventEmitter) {
   }, {
     key: "play",
     value: function play() {
-      var state = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+      var state = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
-      if (this.sched.state === "suspended" && state === 1) {
+      if (this.sched.state === "suspended" && state) {
         this.sched.start(this.sequence);
       }
-      if (this.sched.state === "running" && state === 0) {
+      if (this.sched.state === "running" && !state) {
         this.sched.stop();
       }
     }
@@ -23063,9 +23059,6 @@ function playNote(destination, playbackTime, _ref2) {
   oscillator1.start(t0);
   oscillator1.stop(t2);
   oscillator1.connect(gain);
-
-  // ブラウザのバージョンによってオーディオノードの
-  // ライフタイムがあやしいことがあるので手動で切断しています
   oscillator1.onended = function () {
     oscillator1.disconnect();
     oscillator2.disconnect();
@@ -23142,11 +23135,9 @@ window.addEventListener("DOMContentLoaded", function () {
   var sequencer = new Sequencer(audioContext);
 
   sequencer.setState(store.getState());
-  // シーケンサーの進捗
   sequencer.on("tick", function (index) {
     store.dispatch(actions.tick(index));
   });
-  // データに変更があったらシーケンサーに通知
   store.subscribe(function () {
     sequencer.setState(store.getState());
   });
@@ -23174,11 +23165,11 @@ var initMatrix = nmap(N, function () {
 
 module.exports = redux.combineReducers({
   isPlaying: function isPlaying() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+    var state = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
     var action = arguments[1];
 
     if (action.type === "PLAY") {
-      return state ? 0 : 1;
+      return !state;
     }
     return state;
   },

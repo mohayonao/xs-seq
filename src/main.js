@@ -23,11 +23,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const sequencer = new Sequencer(audioContext);
 
   sequencer.setState(store.getState());
-  // シーケンサーの進捗
   sequencer.on("tick", (index) => {
     store.dispatch(actions.tick(index));
   });
-  // データに変更があったらシーケンサーに通知
   store.subscribe(() => {
     sequencer.setState(store.getState());
   });

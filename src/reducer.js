@@ -8,9 +8,9 @@ const M = 16;
 const initMatrix = nmap(N, () => nmap(M, () => Math.round(Math.random())));
 
 module.exports = redux.combineReducers({
-  isPlaying(state = 0, action) {
+  isPlaying(state = false, action) {
     if (action.type === "PLAY") {
-      return state ? 0 : 1;
+      return !state;
     }
     return state;
   },
