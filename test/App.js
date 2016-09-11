@@ -9,7 +9,7 @@ const { shallow } = require("enzyme");
 const App = require("../src/App");
 
 function setup({ state, actions }) {
-  state = Object.assign({}, {
+  state = Object.assign({
     isPlaying: false,
     bpm: 120,
     matrix: [
@@ -26,7 +26,7 @@ function setup({ state, actions }) {
     <App actions={ actions } bpm={ state.bpm } matrix={ state.matrix } index={ state.index } />
   );
 
-  return { component, actions };
+  return { component, state, actions };
 }
 
 describe("App", () => {
@@ -63,7 +63,7 @@ describe("App", () => {
     assert(actions.toggle.args[0][1] === 3);
   });
 
-  it("has a play grid", () => {
+  it("has a matrix controller", () => {
     const { component } = setup({ state: { matrix: [ [ 0, 1 ], [ 1, 0 ] ], index: 1 } });
     const elems = component.find("span");
 
