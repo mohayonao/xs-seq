@@ -1,37 +1,25 @@
 "use strict";
 
-const redux = require("redux");
 const nmap = require("nmap");
 
 const N = 4;
 const M = 16;
 const initMatrix = nmap(N, () => nmap(M, () => Math.round(Math.random())));
+const initState = { isPlaying: false, bpm: 120, matrix: initMatrix, index: -1 };
 
-module.exports = redux.combineReducers({
-  isPlaying(state = false, action) {
-    if (action.type === "PLAY") {
-      return !state;
-    }
-    return state;
-  },
-  bpm(state = 120, action) {
-    if (action.type === "CHANGE_BPM") {
-      return action.bpm;
-    }
-    return state;
-  },
-  matrix(state = initMatrix, action) {
-    if (action.type === "TOGGLE") {
-      state = JSON.parse(JSON.stringify(state));
-      state[action.row][action.col] = 1 - state[action.row][action.col];
-      return state;
-    }
-    return state;
-  },
-  index(state = -1, action) {
-    if (action.type === "TICK") {
-      return action.index;
-    }
-    return state;
-  },
-});
+module.exports = (state = initState, action) => {
+  switch (action.type) {
+  case "PLAY":
+    return Object.assign({}, state, { isPlaying: !state.isPlaying });
+  case "CHANGE_BPM":
+    return Object.assign({}, state, { bpm: action.bpm });
+  case "TOGGLE": {
+    const matrix = JSON.parse(JSON.stringify(state.matrix));
+    matrix[action.row][action.col] = 1 - matrix[action.row][action.col];
+    return Object.assign({}, state, { matrix });
+  }
+  case "TICK":
+    return Object.assign({} ,state, { index: action.index });
+  }
+  return state;
+};

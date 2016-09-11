@@ -23152,7 +23152,6 @@ window.addEventListener("DOMContentLoaded", function () {
 },{"./App":204,"./Sequencer":205,"./actions":206,"./reducer":208,"react":187,"react-dom":37,"react-redux":40,"redux":193}],208:[function(require,module,exports){
 "use strict";
 
-var redux = require("redux");
 var nmap = require("nmap");
 
 var N = 4;
@@ -23162,46 +23161,27 @@ var initMatrix = nmap(N, function () {
     return Math.round(Math.random());
   });
 });
+var initState = { isPlaying: false, bpm: 120, matrix: initMatrix, index: -1 };
 
-module.exports = redux.combineReducers({
-  isPlaying: function isPlaying() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-    var action = arguments[1];
+module.exports = function () {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? initState : arguments[0];
+  var action = arguments[1];
 
-    if (action.type === "PLAY") {
-      return !state;
-    }
-    return state;
-  },
-  bpm: function bpm() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? 120 : arguments[0];
-    var action = arguments[1];
-
-    if (action.type === "CHANGE_BPM") {
-      return action.bpm;
-    }
-    return state;
-  },
-  matrix: function matrix() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? initMatrix : arguments[0];
-    var action = arguments[1];
-
-    if (action.type === "TOGGLE") {
-      state = JSON.parse(JSON.stringify(state));
-      state[action.row][action.col] = 1 - state[action.row][action.col];
-      return state;
-    }
-    return state;
-  },
-  index: function index() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? -1 : arguments[0];
-    var action = arguments[1];
-
-    if (action.type === "TICK") {
-      return action.index;
-    }
-    return state;
+  switch (action.type) {
+    case "PLAY":
+      return Object.assign({}, state, { isPlaying: !state.isPlaying });
+    case "CHANGE_BPM":
+      return Object.assign({}, state, { bpm: action.bpm });
+    case "TOGGLE":
+      {
+        var matrix = JSON.parse(JSON.stringify(state.matrix));
+        matrix[action.row][action.col] = 1 - matrix[action.row][action.col];
+        return Object.assign({}, state, { matrix: matrix });
+      }
+    case "TICK":
+      return Object.assign({}, state, { index: action.index });
   }
-});
+  return state;
+};
 
-},{"nmap":34,"redux":193}]},{},[207]);
+},{"nmap":34}]},{},[207]);
