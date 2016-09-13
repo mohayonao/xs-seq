@@ -9,23 +9,19 @@ const { Provider } = require("react-redux");
 const App = require("./App");
 const Sequencer = require("./Sequencer");
 const reducer = require("./reducer");
-const actions = require("./actions");
+const actionCreators = require("./actions");
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 window.addEventListener("DOMContentLoaded", () => {
   const store = redux.createStore(reducer);
-  const Container = connect(state => state, dispatch => {
-    return { actions: bindActionCreators(actions, dispatch) };
-  })(App);
+  const actions = bindActionCreators(actionCreators, store.dispatch);
+  const Container = connect(state => state, () => ({ actions }))(App);
 
   const audioContext = new AudioContext();
-  const sequencer = new Sequencer(audioContext);
+  const sequencer = new Sequencer(audioContext, actions);
 
   sequencer.setState(store.getState());
-  sequencer.on("tick", (index) => {
-    store.dispatch(actions.tick(index));
-  });
   store.subscribe(() => {
     sequencer.setState(store.getState());
   });
