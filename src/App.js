@@ -18,7 +18,7 @@ class App extends React.Component {
       <div>
         <button onClick={ actions.play }>start</button>
         <div>
-        BPM: <input type="range" value={ bpm } min="80" max="200" onChange={ changeBPM } />
+          BPM: <input type="range" value={ bpm } min="80" max="200" onChange={ changeBPM }/>
         </div>
         <div>{ matrixElem }</div>
       </div>
