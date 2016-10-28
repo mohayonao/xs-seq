@@ -17,18 +17,29 @@ class Sequencer {
     this.sequence = this.sequence.bind(this);
   }
 
+  doAction(action) {
+    switch (action.type) {
+    case "PLAY":
+      this.togglePlay();
+      break;
+    }
+  }
+
   setState(state) {
     this.bpm = state.bpm;
     this.matrix = state.matrix;
-    this.play(state.isPlaying);
   }
 
-  play(state = true) {
-    if (this.sched.state === "suspended" && state) {
+  togglePlay() {
+    switch (this.sched.state) {
+    case "suspended":
       this.sched.start(this.sequence);
-    }
-    if (this.sched.state === "running" && !state) {
+      this.actions.setPlayingState(true);
+      break;
+    case "running":
       this.sched.stop();
+      this.actions.setPlayingState(false);
+      break;
     }
   }
 

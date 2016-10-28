@@ -27,8 +27,8 @@ describe("reducer", () => {
     assert.deepEqual(actual, expected);
   });
 
-  it("should handle PLAY", () => {
-    const actual = reducer(initState(), { type: "PLAY" });
+  it("should handle SET_PLAYING_STATE", () => {
+    const actual = reducer(initState(), { type: "SET_PLAYING_STATE", state: true });
     const expected = initState({ isPlaying: true });
 
     assert.deepEqual(actual, expected);

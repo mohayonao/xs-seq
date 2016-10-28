@@ -4,6 +4,9 @@ module.exports = {
   play() {
     return { type: "PLAY" };
   },
+  setPlayingState(state) {
+    return { type: "SET_PLAYING_STATE", state };
+  },
   changeBPM(bpm) {
     return { type: "CHANGE_BPM", bpm };
   },

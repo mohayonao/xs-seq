@@ -9,8 +9,8 @@ const initState = { isPlaying: false, bpm: 120, matrix: initMatrix, index: -1 };
 
 module.exports = (state = initState, action) => {
   switch (action.type) {
-  case "PLAY":
-    return Object.assign({}, state, { isPlaying: !state.isPlaying });
+  case "SET_PLAYING_STATE":
+    return Object.assign({}, state, { isPlaying: action.state });
   case "CHANGE_BPM":
     return Object.assign({}, state, { bpm: action.bpm });
   case "TOGGLE": {

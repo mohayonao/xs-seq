@@ -22515,7 +22515,7 @@ module.exports = require('./lib/index');
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _ponyfill = require('./ponyfill');
@@ -22524,12 +22524,19 @@ var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var root = undefined; /* global window */
+var root; /* global window */
 
-if (typeof global !== 'undefined') {
-	root = global;
+
+if (typeof self !== 'undefined') {
+  root = self;
 } else if (typeof window !== 'undefined') {
-	root = window;
+  root = window;
+} else if (typeof global !== 'undefined') {
+  root = global;
+} else if (typeof module !== 'undefined') {
+  root = module;
+} else {
+  root = Function('return this')();
 }
 
 var result = (0, _ponyfill2['default'])(root);
@@ -22857,11 +22864,11 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: "render",
     value: function render() {
-      var _props = this.props;
-      var actions = _props.actions;
-      var bpm = _props.bpm;
-      var matrix = _props.matrix;
-      var index = _props.index;
+      var _props = this.props,
+          actions = _props.actions,
+          bpm = _props.bpm,
+          matrix = _props.matrix,
+          index = _props.index;
 
       var matrixElem = matrix.map(function (track, i) {
         var trackElem = track.map(function (value, j) {
@@ -22946,22 +22953,32 @@ var Sequencer = function () {
   }
 
   _createClass(Sequencer, [{
+    key: "doAction",
+    value: function doAction(action) {
+      switch (action.type) {
+        case "PLAY":
+          this.togglePlay();
+          break;
+      }
+    }
+  }, {
     key: "setState",
     value: function setState(state) {
       this.bpm = state.bpm;
       this.matrix = state.matrix;
-      this.play(state.isPlaying);
     }
   }, {
-    key: "play",
-    value: function play() {
-      var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
-      if (this.sched.state === "suspended" && state) {
-        this.sched.start(this.sequence);
-      }
-      if (this.sched.state === "running" && !state) {
-        this.sched.stop();
+    key: "togglePlay",
+    value: function togglePlay() {
+      switch (this.sched.state) {
+        case "suspended":
+          this.sched.start(this.sequence);
+          this.actions.setPlayingState(true);
+          break;
+        case "running":
+          this.sched.stop();
+          this.actions.setPlayingState(false);
+          break;
       }
     }
   }, {
@@ -22994,12 +23011,15 @@ var Sequencer = function () {
 
 module.exports = Sequencer;
 
-},{"./sounds":208,"web-audio-scheduler":197,"worker-timer":202}],205:[function(require,module,exports){
+},{"./sounds":209,"web-audio-scheduler":197,"worker-timer":202}],205:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   play: function play() {
     return { type: "PLAY" };
+  },
+  setPlayingState: function setPlayingState(state) {
+    return { type: "SET_PLAYING_STATE", state: state };
   },
   changeBPM: function changeBPM(bpm) {
     return { type: "CHANGE_BPM", bpm: bpm };
@@ -23015,20 +23035,33 @@ module.exports = {
 },{}],206:[function(require,module,exports){
 "use strict";
 
+module.exports = function (func) {
+  return function () {
+    return function (next) {
+      return function (action) {
+        next(func(action) || action);
+      };
+    };
+  };
+};
+
+},{}],207:[function(require,module,exports){
+"use strict";
+
 var React = require("react");
 var ReactDom = require("react-dom");
 
-var _require = require("redux");
+var _require = require("redux"),
+    createStore = _require.createStore,
+    applyMiddleware = _require.applyMiddleware,
+    bindActionCreators = _require.bindActionCreators;
 
-var createStore = _require.createStore;
-var bindActionCreators = _require.bindActionCreators;
-
-var _require2 = require("react-redux");
-
-var Provider = _require2.Provider;
-var connect = _require2.connect;
+var _require2 = require("react-redux"),
+    Provider = _require2.Provider,
+    connect = _require2.connect;
 
 var App = require("./App");
+var inject = require("./inject");
 var Sequencer = require("./Sequencer");
 var reducer = require("./reducer");
 var actionCreators = require("./actions");
@@ -23036,7 +23069,7 @@ var actionCreators = require("./actions");
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 window.addEventListener("DOMContentLoaded", function () {
-  var store = createStore(reducer);
+  var store = createStore(reducer, applyMiddleware(inject(audioHandler)));
   var actions = bindActionCreators(actionCreators, store.dispatch);
   var Container = connect(function (state) {
     return state;
@@ -23044,6 +23077,12 @@ window.addEventListener("DOMContentLoaded", function () {
 
   var audioContext = new AudioContext();
   var sequencer = new Sequencer(audioContext, actions);
+
+  sequencer.setState(store.getState());
+
+  function audioHandler(action) {
+    sequencer.doAction(action);
+  }
 
   store.subscribe(function () {
     sequencer.setState(store.getState());
@@ -23056,7 +23095,7 @@ window.addEventListener("DOMContentLoaded", function () {
   ), document.getElementById("app"));
 });
 
-},{"./App":203,"./Sequencer":204,"./actions":205,"./reducer":207,"react":186,"react-dom":36,"react-redux":39,"redux":192}],207:[function(require,module,exports){
+},{"./App":203,"./Sequencer":204,"./actions":205,"./inject":206,"./reducer":208,"react":186,"react-dom":36,"react-redux":39,"redux":192}],208:[function(require,module,exports){
 "use strict";
 
 var nmap = require("nmap");
@@ -23075,8 +23114,8 @@ module.exports = function () {
   var action = arguments[1];
 
   switch (action.type) {
-    case "PLAY":
-      return Object.assign({}, state, { isPlaying: !state.isPlaying });
+    case "SET_PLAYING_STATE":
+      return Object.assign({}, state, { isPlaying: action.state });
     case "CHANGE_BPM":
       return Object.assign({}, state, { bpm: action.bpm });
     case "TOGGLE":
@@ -23091,13 +23130,13 @@ module.exports = function () {
   return state;
 };
 
-},{"nmap":33}],208:[function(require,module,exports){
+},{"nmap":33}],209:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   sine: function sine(destination, playbackTime, _ref) {
-    var frequency = _ref.frequency;
-    var duration = _ref.duration;
+    var frequency = _ref.frequency,
+        duration = _ref.duration;
 
     var t0 = playbackTime;
     var t1 = t0 + duration * 0.4;
@@ -23131,4 +23170,4 @@ module.exports = {
   }
 };
 
-},{}]},{},[206]);
+},{}]},{},[207]);
