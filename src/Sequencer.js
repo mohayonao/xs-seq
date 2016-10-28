@@ -19,7 +19,7 @@ class Sequencer {
 
   doAction(action) {
     switch (action.type) {
-    case "PLAY":
+    case "TOGGLE_PLAY":
       this.togglePlay();
       break;
     }
@@ -34,11 +34,9 @@ class Sequencer {
     switch (this.sched.state) {
     case "suspended":
       this.sched.start(this.sequence);
-      this.actions.setPlayingState(true);
       break;
     case "running":
       this.sched.stop();
-      this.actions.setPlayingState(false);
       break;
     }
   }

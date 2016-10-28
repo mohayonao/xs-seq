@@ -8,7 +8,7 @@ class App extends React.Component {
     const matrixElem = matrix.map((track, i) => {
       const trackElem = track.map((value, j) => {
         const style = { color: (index === j) ? "red" : "black" };
-        const onClick = () => actions.toggle(i, j);
+        const onClick = () => actions.toggleMatrix(i, j);
         return (<span key={ j } style={ style } onClick={ onClick }>{ value ? "■" : "□" }</span>);
       });
       return (<div key={ i }>{ trackElem }</div>);
@@ -16,7 +16,7 @@ class App extends React.Component {
     const changeBPM = e => actions.changeBPM(+e.target.value);
     return (
       <div>
-        <button onClick={ actions.play }>start</button>
+        <button onClick={ actions.togglePlay }>start</button>
         <div>
           BPM: <input type="range" value={ bpm } min="80" max="200" onChange={ changeBPM }/>
         </div>

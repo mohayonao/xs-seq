@@ -31,13 +31,13 @@ function setup({ state, actions }) {
 
 describe("App", () => {
   it("has a start button", () => {
-    const { component, actions } = setup({ actions: { play: sinon.spy() } });
+    const { component, actions } = setup({ actions: { togglePlay: sinon.spy() } });
     const elem = component.find("button");
 
     assert(elem.length === 1);
 
     elem.simulate("click");
-    assert(actions.play.callCount === 1);
+    assert(actions.togglePlay.callCount === 1);
   });
 
   it("has a bpm changer", () => {
@@ -52,15 +52,15 @@ describe("App", () => {
   });
 
   it("has toggle buttons", () => {
-    const { component, actions } = setup({ actions: { toggle: sinon.spy() } });
+    const { component, actions } = setup({ actions: { toggleMatrix: sinon.spy() } });
     const elems = component.find("span");
 
     assert(elems.length === 64);
 
     elems.at(2 * 16 + 3).simulate("click");
-    assert(actions.toggle.callCount === 1);
-    assert(actions.toggle.args[0][0] === 2);
-    assert(actions.toggle.args[0][1] === 3);
+    assert(actions.toggleMatrix.callCount === 1);
+    assert(actions.toggleMatrix.args[0][0] === 2);
+    assert(actions.toggleMatrix.args[0][1] === 3);
   });
 
   it("has a matrix controller", () => {

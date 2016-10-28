@@ -27,8 +27,8 @@ describe("reducer", () => {
     assert.deepEqual(actual, expected);
   });
 
-  it("should handle SET_PLAYING_STATE", () => {
-    const actual = reducer(initState(), { type: "SET_PLAYING_STATE", state: true });
+  it("should handle TOGGLE_PLAY", () => {
+    const actual = reducer(initState(), { type: "TOGGLE_PLAY" });
     const expected = initState({ isPlaying: true });
 
     assert.deepEqual(actual, expected);
@@ -41,8 +41,8 @@ describe("reducer", () => {
     assert.deepEqual(actual, expected);
   });
 
-  it("should handle TOGGLE", () => {
-    const actual = reducer(initState(), { type: "TOGGLE", row: 1, col: 2 });
+  it("should handle TOGGLE_MATRIX", () => {
+    const actual = reducer(initState(), { type: "TOGGLE_MATRIX", row: 1, col: 2 });
     const expected = initState();
 
     expected.matrix[1][2] = 1;

@@ -6,16 +6,16 @@ const assert = require("assert");
 const actions = require("../src/actions");
 
 describe("actions", () => {
-  it("play should create PLAY action", () => {
-    assert.deepEqual(actions.play(), { type: "PLAY" });
+  it("togglePlay should create TOGGLE_PLAY action", () => {
+    assert.deepEqual(actions.togglePlay(), { type: "TOGGLE_PLAY" });
   });
 
   it("changeBPM should create CHANGE_BPM action", () => {
     assert.deepEqual(actions.changeBPM(140), { type: "CHANGE_BPM", bpm: 140 });
   });
 
-  it("toggle should create TOGGLE action", () => {
-    assert.deepEqual(actions.toggle(1, 2), { type: "TOGGLE", row: 1, col: 2 });
+  it("toggleMatrix should create TOGGLE_MATRIX action", () => {
+    assert.deepEqual(actions.toggleMatrix(1, 2), { type: "TOGGLE_MATRIX", row: 1, col: 2 });
   });
 
   it("tick should create TICK action", () => {

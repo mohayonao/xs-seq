@@ -22874,7 +22874,7 @@ var App = function (_React$Component) {
         var trackElem = track.map(function (value, j) {
           var style = { color: index === j ? "red" : "black" };
           var onClick = function onClick() {
-            return actions.toggle(i, j);
+            return actions.toggleMatrix(i, j);
           };
           return React.createElement(
             "span",
@@ -22896,7 +22896,7 @@ var App = function (_React$Component) {
         null,
         React.createElement(
           "button",
-          { onClick: actions.play },
+          { onClick: actions.togglePlay },
           "start"
         ),
         React.createElement(
@@ -22956,7 +22956,7 @@ var Sequencer = function () {
     key: "doAction",
     value: function doAction(action) {
       switch (action.type) {
-        case "PLAY":
+        case "TOGGLE_PLAY":
           this.togglePlay();
           break;
       }
@@ -22973,11 +22973,9 @@ var Sequencer = function () {
       switch (this.sched.state) {
         case "suspended":
           this.sched.start(this.sequence);
-          this.actions.setPlayingState(true);
           break;
         case "running":
           this.sched.stop();
-          this.actions.setPlayingState(false);
           break;
       }
     }
@@ -23015,17 +23013,14 @@ module.exports = Sequencer;
 "use strict";
 
 module.exports = {
-  play: function play() {
-    return { type: "PLAY" };
-  },
-  setPlayingState: function setPlayingState(state) {
-    return { type: "SET_PLAYING_STATE", state: state };
+  togglePlay: function togglePlay() {
+    return { type: "TOGGLE_PLAY" };
   },
   changeBPM: function changeBPM(bpm) {
     return { type: "CHANGE_BPM", bpm: bpm };
   },
-  toggle: function toggle(row, col) {
-    return { type: "TOGGLE", row: row, col: col };
+  toggleMatrix: function toggleMatrix(row, col) {
+    return { type: "TOGGLE_MATRIX", row: row, col: col };
   },
   tick: function tick(index) {
     return { type: "TICK", index: index };
@@ -23114,11 +23109,11 @@ module.exports = function () {
   var action = arguments[1];
 
   switch (action.type) {
-    case "SET_PLAYING_STATE":
-      return Object.assign({}, state, { isPlaying: action.state });
+    case "TOGGLE_PLAY":
+      return Object.assign({}, state, { isPlaying: !state.isPlaying });
     case "CHANGE_BPM":
       return Object.assign({}, state, { bpm: action.bpm });
-    case "TOGGLE":
+    case "TOGGLE_MATRIX":
       {
         var matrix = JSON.parse(JSON.stringify(state.matrix));
         matrix[action.row][action.col] = 1 - matrix[action.row][action.col];
